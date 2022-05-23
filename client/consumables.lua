@@ -462,3 +462,57 @@ CreateThread(function()
         end
     end
 end)
+
+--cr24/7 slushy
+function AddArmor()
+    local a = 15
+    while a > 0 do
+        Wait(math.random(750, 1150))
+        a = a - 1
+        AddArmourToPed(PlayerPedId(), 1)
+    end
+end
+
+RegisterNetEvent('consumables:client:slushy', function(itemName)
+    TriggerEvent('animations:client:EmoteCommandStart', {"cup"})
+    QBCore.Functions.Progressbar("drink_something", "Drinking Slushy...", 3500, false, true, {
+        disableMovement = false,
+        disableCarMovement = false,
+        disableMouse = false,
+        disableCombat = true,
+    }, {}, {}, {}, function() -- Done
+        TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
+        TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + ConsumeablesSlushy[itemName])
+        TriggerServerEvent('hud:server:RelieveStress', math.random(2, 4))
+        -- AddArmor(3)
+    end)
+end)
+
+local function RunFast()
+    local startStamina = 3
+
+    SetRunSprintMultiplierForPlayer(PlayerId(), 1.2)
+    while startStamina > 0 do
+        Wait(1000)
+        startStamina = startStamina - 1
+        --RestorePlayerStamina(PlayerId(), 1.0)
+    end
+    startStamina = 0
+    SetRunSprintMultiplierForPlayer(PlayerId(), 1.0)
+end
+
+RegisterNetEvent('consumables:client:EatSuperDonut', function(itemName)
+    TriggerEvent('animations:client:EmoteCommandStart', {"donut"})
+    QBCore.Functions.Progressbar("eat_something", "Eating..", 5000, false, true, {
+        disableMovement = false,
+        disableCarMovement = false,
+		disableMouse = false,
+		disableCombat = true,
+    }, {}, {}, {}, function() -- Done
+        TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
+        TriggerEvent('animations:client:EmoteCommandStart', {"c"})
+        -- RunFast()
+        TriggerServerEvent("QBCore:Server:SetMetaData", "hunger", QBCore.Functions.GetPlayerData().metadata["hunger"] + ConsumeablesEatSuperDonut[itemName])
+        TriggerServerEvent('hud:server:RelieveStress', math.random(2, 8))
+    end)
+end)
